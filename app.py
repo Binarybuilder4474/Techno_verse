@@ -46,8 +46,8 @@ app = FastAPI(title="Secure Examination Management System", lifespan=lifespan)
 # Module names inside the routers/ package. Add new ones here as they are built.
 ROUTERS: list[str] = [
     "auth", "users", "questions", "exams", "enrollments",
-    "attempts", "preferences", "monitoring", "integrity", "fairness",
-    # coming next: "grading", "results", "reports", "imports", "analytics", "disputes",
+    "attempts", "preferences", "monitoring", "integrity", "fairness", "imports", "analytics",
+    # coming next: "grading", "results", "disputes",
 ]
 
 for name in ROUTERS:

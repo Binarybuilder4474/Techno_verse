@@ -114,8 +114,8 @@ const empty = (title, text) => `<div class="empty"><h3>${esc(title)}</h3><p>${te
 
 /* ---------- router ---------- */
 const NAV = {
-  admin: [['#/users', 'Users'], ['#/exams', 'Exams']],
-  examiner: [['#/exams', 'Exams'], ['#/questions', 'Question bank']],
+  admin: [['#/users', 'Users'], ['#/exams', 'Exams'], ['#/imports', 'Bulk imports'], ['#/analytics', 'Analytics']],
+  examiner: [['#/exams', 'Exams'], ['#/questions', 'Question bank'], ['#/imports', 'Bulk imports'], ['#/analytics', 'Analytics']],
   candidate: [['#/my-exams', 'My exams']],
 };
 const HOME = { admin: '#/users', examiner: '#/exams', candidate: '#/my-exams' };
