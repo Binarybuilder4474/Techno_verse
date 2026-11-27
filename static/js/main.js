@@ -12,6 +12,7 @@ function omrSheet() {
 }
 
 App.showLogin = function (message = '') {
+  App.stopRoom?.();
   location.hash = '';
   $('#root').innerHTML = `<div class="login">
     <section class="login-art" aria-hidden="false">

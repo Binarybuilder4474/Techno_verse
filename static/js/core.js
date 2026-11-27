@@ -124,8 +124,15 @@ async function route() {
   if (!App.user) return;
   const hash = location.hash || HOME[App.user.role];
   const parts = hash.replace(/^#\//, '').split('/');
-  const allowed = NAV[App.user.role].map(n => n[0].slice(2));
   const base = parts[0];
+  clearInterval(App.monTimer);
+  if (base === 'exam') {                       // the exam room is full screen, outside the normal shell
+    App.stopRoom?.();
+    try { await App.views.exam(parts.slice(1)); } catch (e) { $('#root').innerHTML = `<div class="room-msg"><div class="banner bad">${esc(e.message)}</div></div>`; }
+    return;
+  }
+  if (App.inRoom) { App.stopRoom(); showShell(); return; }   // leaving the room: bring the shell back
+  const allowed = NAV[App.user.role].map(n => n[0].slice(2));
   if (!allowed.includes(base)) { location.hash = HOME[App.user.role]; return; }
   $$('.nav a').forEach(a => a.removeAttribute('aria-current'));
   const link = $(`.nav a[href="#/${base}"]`); if (link) link.setAttribute('aria-current', 'page');

@@ -66,16 +66,17 @@ function examForm(exam, onSaved) {
 /* ---------- detail ---------- */
 async function examDetail(id) {
   let tab = 'overview';
-  const TABS = [['overview', 'Overview'], ['questions', 'Questions'], ['candidates', 'Candidates'], ['review', 'Review & publish']];
+  const TABS = [['overview', 'Overview'], ['questions', 'Questions'], ['candidates', 'Candidates'], ['review', 'Review & publish'], ['monitor', 'Live monitor'], ['fairness', 'Paper fairness']];
   let ex;
 
   async function reload() { ex = await api('/api/exams/' + id); draw(); }
   function draw() {
+    clearInterval(App.monTimer);
     const canPublish = ex.status === 'draft';
     const canRevert = ex.eff_status === 'published' && !ex.locked;
     setView(`<p class="small"><a href="#/exams">&larr; All exams</a></p>` +
       pageHead(ex.title, `${statusBadge(ex.eff_status)} <span class="muted">${fmtDT(ex.start_time)} to ${fmtDT(ex.end_time)}</span>`,
-        `${canPublish ? '<button class="btn primary" id="pub">Publish exam</button><button class="btn danger" id="del">Delete</button>' : ''}${canRevert ? '<button class="btn" id="unpub">Return to draft</button>' : ''}`) +
+        `${canPublish ? '<button class="btn primary" id="pub">Publish exam</button><button class="btn danger" id="del">Delete</button>' : ''}${canRevert ? '<button class="btn" id="unpub">Return to draft</button>' : ''}${ex.questions.length ? '<button class="btn" id="sandbox" title="Take this exam as a candidate. Nothing is recorded.">Preview as candidate</button>' : ''}`) +
       (ex.locked ? '<div class="banner warn">This exam has started, so its settings, questions and enrollment can no longer change.</div>' : '') +
       `<div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button role="tab" aria-selected="${tab === k}" data-tab="${k}">${l}</button>`).join('')}</div><div id="tabbody"></div>`);
     $$('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; draw(); });
@@ -85,7 +86,10 @@ async function examDetail(id) {
       if (!await confirmBox('Delete this draft exam and its question pool and enrollments?', 'Delete exam', true)) return;
       busy(e.target, async () => { await api('/api/exams/' + id, { method: 'DELETE' }); toast('Exam deleted.'); location.hash = '#/exams'; });
     };
-    ({ overview: tabOverview, questions: tabQuestions, candidates: tabCandidates, review: tabReview })[tab]().catch(fail);
+    if ($('#sandbox')) $('#sandbox').onclick = e => busy(e.target, () => App.startExam(id, true));
+    const tabs = { overview: tabOverview, questions: tabQuestions, candidates: tabCandidates, review: tabReview,
+      monitor: () => App.monitorTab(id, ex), fairness: () => App.fairnessTab(id, ex) };
+    Promise.resolve().then(() => tabs[tab]()).catch(fail);
   }
 
   function tabOverview() {

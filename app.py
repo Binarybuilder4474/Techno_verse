@@ -5,11 +5,14 @@ Main entry point. Run the whole system with:
 
 Routers (one file per feature) are registered in the ROUTERS list below.
 """
+import asyncio
 import importlib
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.concurrency import run_in_threadpool
 from fastapi.staticfiles import StaticFiles
 
 from config import STATIC_DIR
@@ -18,13 +21,33 @@ from database import check_connection
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("exam")
 
-app = FastAPI(title="Secure Examination Management System")
+
+
+async def _sweeper():
+    """Every 30s: finalise attempts whose server deadline has passed, even if the browser is gone."""
+    from attempt_core import sweep_once
+    while True:
+        await asyncio.sleep(30)
+        try:
+            await run_in_threadpool(sweep_once)
+        except Exception:
+            log.exception("Expiry sweeper failed")
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    task = asyncio.create_task(_sweeper())
+    yield
+    task.cancel()
+
+
+app = FastAPI(title="Secure Examination Management System", lifespan=lifespan)
 
 # Module names inside the routers/ package. Add new ones here as they are built.
 ROUTERS: list[str] = [
     "auth", "users", "questions", "exams", "enrollments",
-    # coming next: "attempts", "monitoring", "grading", "results", "reports",
-    # "imports", "analytics", "integrity", "fairness", "disputes",
+    "attempts", "preferences", "monitoring", "integrity", "fairness",
+    # coming next: "grading", "results", "reports", "imports", "analytics", "disputes",
 ]
 
 for name in ROUTERS:

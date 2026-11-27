@@ -1,4 +1,4 @@
-/* Candidate: my exams. (The exam room itself arrives in the next patch.) */
+/* Candidate: my exams. Start/resume opens the exam room (views_exam_room.js). */
 App.views['my-exams'] = async function () {
   const list = await api('/api/exams/mine');
   const done = e => e.attempt_status === 'submitted' || e.attempt_status === 'expired';
@@ -22,5 +22,5 @@ App.views['my-exams'] = async function () {
   setView(pageHead('My exams', 'Exams you are enrolled in.') + (!list.length ?
     `<div class="panel">${empty('No exams assigned yet', 'When an examiner enrolls you in a published exam, it will appear here.')}</div>` :
     groups.filter(g => g[1].length).map(([t, items]) => `<h2 class="section-title">${t}</h2><div class="panel">${items.map(card).join('')}</div>`).join('')));
-  $$('[data-start]').forEach(b => b.onclick = () => toast('The exam room is added in the next patch.'));
+  $$('[data-start]').forEach(b => b.onclick = () => busy(b, () => App.startExam(+b.dataset.start)));
 };

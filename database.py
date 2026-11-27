@@ -11,6 +11,7 @@ engine = create_engine(
     max_overflow=2,
     pool_recycle=280,     # reconnect before the host drops idle connections
     pool_pre_ping=True,   # test a connection before using it
+    connect_args={"init_command": "SET time_zone='+00:00'"},   # TIMESTAMP columns behave as UTC too
     future=True,
 )
 
