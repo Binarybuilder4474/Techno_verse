@@ -47,7 +47,7 @@ app = FastAPI(title="Secure Examination Management System", lifespan=lifespan)
 ROUTERS: list[str] = [
     "auth", "users", "questions", "exams", "enrollments",
     "attempts", "preferences", "monitoring", "integrity", "fairness", "imports", "analytics",
-    # coming next: "grading", "results", "disputes",
+    "grading", "results",
 ]
 
 for name in ROUTERS:

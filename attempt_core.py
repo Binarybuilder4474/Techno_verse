@@ -30,7 +30,8 @@ def get_attempt(db, attempt_id: int, user: dict) -> dict:
 
 def staff_attempt(db, attempt_id: int, user: dict) -> dict:
     """Attempt lookup for examiners/admins: only attempts of exams they own."""
-    a = q_one(db, """SELECT a.*, e.created_by, e.title, e.integrity_monitoring, e.ai_review_written
+    a = q_one(db, """SELECT a.*, e.created_by, e.title, e.integrity_monitoring, e.ai_review_written,
+                            e.results_published
                      FROM attempts a JOIN exams e ON e.id=a.exam_id WHERE a.id=:i""", i=attempt_id)
     if not a:
         raise HTTPException(404, "Attempt not found.")
