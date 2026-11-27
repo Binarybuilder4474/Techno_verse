@@ -4,14 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Secure Examination Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body style="font-family:system-ui,sans-serif;max-width:560px;margin:15vh auto;padding:0 1rem">
-<h1>Exam system is running</h1>
-<p id="s">Checking database connection...</p>
-<script>
-fetch('/api/health').then(r => r.json()).then(d => {
-  document.getElementById('s').textContent = 'Server: ' + d.status + ' | Database: ' + d.database;
-}).catch(() => { document.getElementById('s').textContent = 'Server unreachable'; });
-</script>
+<body>
+<a class="skip" href="#view">Skip to content</a>
+<div id="root"></div>
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
+<div id="modal-root"></div>
+<script src="/static/js/core.js"></script>
+<script src="/static/js/views_users.js"></script>
+<script src="/static/js/views_questions.js"></script>
+<script src="/static/js/views_exams.js"></script>
+<script src="/static/js/views_candidate.js"></script>
+<script src="/static/js/main.js"></script>
 </body>
 </html>
